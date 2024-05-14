@@ -3,7 +3,9 @@ const puppeteer = require("puppeteer");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const nodemailer = require('nodemailer');
-const app = express.Router();
+const app = express();
+app.use((cors))
+app.use(express.json())
 const port = 8080;
 
 const DB = "mongodb+srv://jakkavignesh2002:VigneshJakka@productpricetracker.6u0wkqb.mongodb.net/"
@@ -69,9 +71,6 @@ let registerSchema = new mongoose.Schema({
     },
   ],
 });
-
-app.use(cors());
-app.use(express.json());
 
 const sendEmail = async (email, scrapedData, url) => {
   try {
@@ -169,4 +168,3 @@ app.post("/scrapeAmazon", async (req, res) => {
 app.listen(3001, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
-module.exports=app;

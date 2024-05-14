@@ -108,6 +108,10 @@ const sendEmail = async (email, scrapedData, url) => {
   }
 };
 
+app.get("/helloWorld", (req, res) => {
+    res.status(200).send("Hello World");
+});
+
 app.post("/scrapeAmazon", async (req, res) => {
   try {
     const { url, email } = req.body;

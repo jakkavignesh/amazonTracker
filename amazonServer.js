@@ -4,12 +4,10 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const nodemailer = require('nodemailer');
 const app = express();
-app.use((cors))
-app.use(express.json())
 const port = 8080;
 
 const DB = "mongodb+srv://jakkavignesh2002:VigneshJakka@productpricetracker.6u0wkqb.mongodb.net/"
-// const DB = "mongodb+srv://jakkavignesh2002:jakkavignesh@cluster0.3gfux4d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
 mongoose.connect(DB).then(() => {
     console.log("Connected to MongoDb");
   })
@@ -46,7 +44,6 @@ let registerSchema = new mongoose.Schema({
     {
       productPlatform: {
         type: String,
-        // required: true,
       },
       productName: {
         type: String,
@@ -62,7 +59,6 @@ let registerSchema = new mongoose.Schema({
       },
       productURL: {
         type: String,
-        // required: true,
       },
       dateTime: {
         type: Date,
@@ -71,6 +67,9 @@ let registerSchema = new mongoose.Schema({
     },
   ],
 });
+
+app.use(cors());
+app.use(express.json());
 
 const sendEmail = async (email, scrapedData, url) => {
   try {
@@ -89,7 +88,7 @@ const sendEmail = async (email, scrapedData, url) => {
         name: "B15 Product Pricetracker",
         address: "b15productpricetracker@gmail.com"
       },
-      to: `${email}`, // replace with the recipient's email
+      to: `${email}`,
       subject: 'Amazon Product Information',
       html: `
         <p><strong>Product Name:</strong> ${scrapedData.productName}</p>
@@ -106,14 +105,6 @@ const sendEmail = async (email, scrapedData, url) => {
     console.error('Error sending email:', error);
   }
 };
-
-app.get("/", (req, res) => {
-    res.send("Hello")
-})
-
-app.get("/helloWorld", (req, res) => {
-    res.status(200).send("Hello World");
-});
 
 app.post("/scrapeAmazon", async (req, res) => {
   try {
@@ -143,8 +134,6 @@ app.post("/scrapeAmazon", async (req, res) => {
       const discount = Math.round(((productMrp - productPrice) / productMrp) * 100);
 
       console.log(productName, productPrice, productMrp, discount, productRating)
-      // Call the exposed sendEmail function to send an email with the scraped data
-      // window.sendEmail(productName, productPrice, productMrp, discount, productRating);
       return { productName, productPrice, productMrp, discount, productRating };
     });
     await sendEmail(email, scrapedData, url);
@@ -160,15 +149,13 @@ app.post("/scrapeAmazon", async (req, res) => {
       productURL: url,
     });
     await userExists.save();
-    // res.json({ data: scrapedData });
     await browser.close();
-    // await sendEmail(email, scrapedData);
   } catch (error) {
     console.error("Error during scraping:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-app.listen(3001, () => {
+app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
